@@ -10,22 +10,21 @@ const config: Config = {
     extend: {
       colors: {
         // TUS COLORES DE MARCA CORREGIDOS
+        // TUS COLORES DE MARCA
         lavix: {
-          50:  "#eef0ff", // Fondo muy claro
-          100: "#e0e4ff",
-          200: "#c7cfff",
-          400: "#6370ff",
-          // TU COLOR EXACTO (RGB: 1, 14, 155) -> HEX: #010E9B
-          600: "#010E9B", 
-          // Un tono un poquito más oscuro para el efecto Hover
-          700: "#000a7a", 
-          900: "#00053d", // Azul casi negro para fondos oscuros
+          50:  "#eef2ff",
+          100: "#e0e7ff",
+          400: "#6366f1",
+          600: "#0028C0", // Azul Eléctrico Principal (Aprox. Logo)
+          700: "#0020A0", // Hover
+          900: "#000a45", // Azul Noche (Fondo oscuro)
         }
       },
       fontFamily: {
-        // Asegúrate que esto coincida con como nombraste la variable en layout.tsx
+        // Esto conecta con tu layout.tsx
         sans: ['var(--font-outfit)', 'sans-serif'],
       },
+      // Animaciones para la web
       animation: {
         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
       },
@@ -37,6 +36,9 @@ const config: Config = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-animate"), // <--- ESTA ES LA FORMA CORRECTA
+    // Si tenías "tw-animate-css", bórralo y pon este.
+  ],
 };
 export default config;
