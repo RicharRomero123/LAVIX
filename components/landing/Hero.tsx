@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, Smartphone, MessageCircle, TrendingUp, UserPlus, AlertTriangle } from "lucide-react";
+import { ArrowRight, Smartphone, MessageCircle, TrendingUp, UserPlus, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 
 // --- IMPORTAMOS TUS PANTALLAS ---
 import { ScreenOrders } from "./screens/screen-orders";
 import { ScreenFinance } from "./screens/screen-finance";
-import { ScreenClients } from "./screens/screen-clients";
+import { ScreenPOS } from "./screens/screen-clients"; 
 
 // --- ANIMACIONES ---
 const fadeInUp: Variants = {
@@ -25,14 +25,10 @@ const containerVariants: Variants = {
   }
 };
 
-// NUEVA ANIMACIÓN PARA BURBUJAS ESTÁTICAS
-// Solo entran suavemente y se quedan quietas
 const slideInBubble: Variants = {
-  hidden: { opacity: 0, scale: 0.8, x: 20 }, // Empiezan un poco invisibles y movidas
+  hidden: { opacity: 0, scale: 0.8, x: 20 },
   visible: { 
-    opacity: 1, 
-    scale: 1, 
-    x: 0, 
+    opacity: 1, scale: 1, x: 0, 
     transition: { type: "spring", stiffness: 100, damping: 15 } 
   }
 };
@@ -48,11 +44,14 @@ export default function Hero() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Configuramos las pantallas
+  // Navegación
+  const handlePrev = () => setActiveIndex((prev) => (prev - 1 + 3) % 3);
+  const handleNext = () => setActiveIndex((prev) => (prev + 1) % 3);
+
   const phones = [
     { id: 0, component: <ScreenFinance />, label: "Finanzas" },
     { id: 1, component: <ScreenOrders isActive={activeIndex === 1} />, label: "Pedidos" },
-    { id: 2, component: <ScreenClients />, label: "Clientes" }
+    { id: 2, component: <ScreenPOS />, label: "POS" }
   ];
 
   const getPosition = (index: number) => {
@@ -61,19 +60,40 @@ export default function Hero() {
     return "right";
   };
 
-  // Variantes de posición teléfonos
+  // --- VARIANTES DE ANIMACIÓN ---
   const variants = {
-    center: { x: 0, scale: 1, zIndex: 30, opacity: 1, filter: "blur(0px)", rotate: 0, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
-    left: { x: -340, scale: 0.8, zIndex: 10, opacity: 0.6, filter: "blur(2px)", rotate: -15, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
-    right: { x: 340, scale: 0.8, zIndex: 10, opacity: 0.6, filter: "blur(2px)", rotate: 15, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+    center: { x: 0, scale: 1, zIndex: 30, opacity: 1, filter: "blur(0px)", rotate: 0, y: 0 },
+    left: { x: -340, scale: 0.8, zIndex: 10, opacity: 0.6, filter: "blur(2px)", rotate: -15, y: 0 },
+    right: { x: 340, scale: 0.8, zIndex: 10, opacity: 0.6, filter: "blur(2px)", rotate: 15, y: 0 }
   };
+  
   const mobileVariants = {
-    center: { x: 0, scale: 1, zIndex: 30, opacity: 1, rotate: 0, y: 0 },
-    left: { x: -160, scale: 0.75, zIndex: 10, opacity: 0.5, rotate: -10, y: 0 },
-    right: { x: 160, scale: 0.75, zIndex: 10, opacity: 0.5, rotate: 10, y: 0 }
+    center: { 
+      x: 0, 
+      scale: 1, 
+      zIndex: 30, 
+      opacity: 1, // Full color
+      rotate: 0, 
+      y: 0 
+    },
+    left: { 
+      x: -120, // Se asoma por la izquierda
+      scale: 0.85, 
+      zIndex: 10, 
+      opacity: 0.5, // Semi-transparente
+      rotate: -10, 
+      y: 0 
+    },
+    right: { 
+      x: 120, // Se asoma por la derecha
+      scale: 0.85, 
+      zIndex: 10, 
+      opacity: 0.5, // Semi-transparente
+      rotate: 10, 
+      y: 0 
+    }
   };
 
-  // Lógica de entrada inicial teléfonos
   const getInitialState = (id: number) => {
     if (isMobile) return { opacity: 0, y: 100 };
     if (id === 1) return { y: 500, opacity: 0 };
@@ -118,7 +138,7 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* TÍTULO + BURBUJAS ESTÁTICAS */}
+          {/* TÍTULO + BURBUJAS */}
           <div className="relative inline-block">
             <motion.h1 variants={fadeInUp} className="text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 drop-shadow-2xl relative z-10 mx-8">
               Tu negocio en <br className="hidden md:block"/>
@@ -127,67 +147,30 @@ export default function Hero() {
               </span>
             </motion.h1>
 
-            {/* --- BURBUJAS (Ahora usan slideInBubble y NO tienen animación infinita) --- */}
-            
-            {/* 1. WhatsApp */}
-            <motion.div 
-              variants={slideInBubble}
-              className="absolute -left-72 -top-10 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[-8deg] w-60 pointer-events-none z-0"
-            >
-              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-green-500/30">
-                <MessageCircle fill="white" className="text-white w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] text-white/60 font-medium uppercase">Notificación</p>
-                <p className="text-xs text-white font-bold leading-tight">"Su ropa está lista 👔"</p>
-              </div>
+            {/* Burbujas */}
+            <motion.div variants={slideInBubble} className="absolute -left-72 -top-10 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[-8deg] w-60 pointer-events-none z-0">
+              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-green-500/30"><MessageCircle fill="white" className="text-white w-5 h-5" /></div>
+              <div className="text-left"><p className="text-[10px] text-white/60 font-medium uppercase">Notificación</p><p className="text-xs text-white font-bold leading-tight">"Su ropa está lista 👔"</p></div>
             </motion.div>
 
-            {/* 2. Finanzas */}
-            <motion.div 
-              variants={slideInBubble}
-              className="absolute -right-72 bottom-0 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[8deg] w-56 pointer-events-none z-0"
-            >
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
-                <TrendingUp className="text-white w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] text-white/60 font-medium uppercase">Ingresos Hoy</p>
-                <p className="text-xl text-white font-black">S/ 1,450.00</p>
-              </div>
+            <motion.div variants={slideInBubble} className="absolute -right-72 bottom-0 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[8deg] w-56 pointer-events-none z-0">
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30"><TrendingUp className="text-white w-5 h-5" /></div>
+              <div className="text-left"><p className="text-[10px] text-white/60 font-medium uppercase">Ingresos Hoy</p><p className="text-xl text-white font-black">S/ 1,450.00</p></div>
             </motion.div>
 
-             {/* 3. Nuevo Cliente */}
-             <motion.div 
-              variants={slideInBubble}
-              className="absolute -right-64 -top-16 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[5deg] w-60 pointer-events-none z-0"
-            >
-              <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30">
-                <UserPlus className="text-white w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] text-white/60 font-medium uppercase">Nuevo Cliente</p>
-                <p className="text-xs text-white font-bold leading-tight">Hotel "Los Andes" registrado.</p>
-              </div>
+             <motion.div variants={slideInBubble} className="absolute -right-64 -top-16 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[5deg] w-60 pointer-events-none z-0">
+              <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/30"><UserPlus className="text-white w-5 h-5" /></div>
+              <div className="text-left"><p className="text-[10px] text-white/60 font-medium uppercase">Nuevo Cliente</p><p className="text-xs text-white font-bold leading-tight">Hotel "Los Andes" registrado.</p></div>
             </motion.div>
 
-             {/* 4. Alerta Stock */}
-             <motion.div 
-              variants={slideInBubble}
-              className="absolute -left-64 -bottom-12 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[-5deg] w-60 pointer-events-none z-0"
-            >
-              <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-yellow-500/30">
-                <AlertTriangle className="text-white w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <p className="text-[10px] text-white/60 font-medium uppercase">Alerta de Stock</p>
-                <p className="text-xs text-white font-bold leading-tight">Queda poco detergente líquido.</p>
-              </div>
+             <motion.div variants={slideInBubble} className="absolute -left-64 -bottom-12 hidden xl:flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 pr-6 rounded-2xl shadow-2xl rotate-[-5deg] w-60 pointer-events-none z-0">
+              <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-yellow-500/30"><AlertTriangle className="text-white w-5 h-5" /></div>
+              <div className="text-left"><p className="text-[10px] text-white/60 font-medium uppercase">Alerta de Stock</p><p className="text-xs text-white font-bold leading-tight">Queda poco detergente líquido.</p></div>
             </motion.div>
           </div>
 
           <motion.p variants={fadeInUp} className="text-xl text-blue-100/80 max-w-2xl mx-auto mb-8 font-medium mt-8">
-            Toca los teléfonos para ver todo lo que puedes controlar.
+            Toca los teléfonos o usa las flechas para ver más.
           </motion.p>
 
            {/* Botones */}
@@ -207,7 +190,23 @@ export default function Hero() {
 
 
         {/* --- 3. CARRUSEL DE CELULARES --- */}
-        <div className="relative w-full h-[700px] flex justify-center items-center perspective-1000 mt-8">
+        <div className="relative w-full h-[700px] flex justify-center items-center perspective-1000 mt-8 group">
+            
+            {/* --- FLECHAS DE NAVEGACIÓN (Solo Móvil: lg:hidden) --- */}
+            <button 
+                onClick={handlePrev}
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-[#010E9B] transition-all shadow-xl active:scale-90 lg:hidden"
+            >
+                <ChevronLeft size={28} />
+            </button>
+
+            <button 
+                onClick={handleNext}
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-[#010E9B] transition-all shadow-xl active:scale-90 lg:hidden"
+            >
+                <ChevronRight size={28} />
+            </button>
+
             {phones.map((phone, index) => {
                 const position = getPosition(index);
                 const isCenter = position === "center";
@@ -220,7 +219,6 @@ export default function Hero() {
                         variants={isMobile ? mobileVariants : variants}
                         transition={{ 
                            default: { type: "spring", stiffness: 300, damping: 30 },
-                           // Entrada Lenta
                            y: { duration: 1.5, ease: "easeOut", delay: 0.8 + (index * 0.2) },
                            x: { duration: 1.5, ease: "easeOut", delay: 0.8 + (index * 0.2) },
                            opacity: { duration: 1.2, delay: 0.8 + (index * 0.2) },
@@ -231,9 +229,10 @@ export default function Hero() {
                         style={{ transformStyle: "preserve-3d" }}
                     >
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-slate-900 rounded-b-xl z-40 pointer-events-none"/>
+                        
+                        {/* Brillo oscuro solo en inactivos */}
                         {!isCenter && (<div className="absolute inset-0 bg-black/40 z-50 pointer-events-none transition-colors hover:bg-black/10"/>)}
                         
-                        {/* AQUI RENDERIZAMOS EL COMPONENTE IMPORTADO */}
                         <div className="w-full h-full bg-slate-50 pointer-events-auto">
                            {phone.component}
                         </div>
