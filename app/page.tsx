@@ -1,7 +1,7 @@
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import Benefits from "@/components/landing/Benefits";
-import InteractiveDemo from "@/components/landing/InteractiveDemo";
+import Ecosystem from "@/components/landing/Ecosystem";
 import Features from "@/components/landing/Features"; // NUEVO
 import Pricing from "@/components/landing/Pricing"; // NUEVO
 import FAQ from "@/components/landing/FAQ"; // NUEVO
@@ -16,7 +16,7 @@ export default function LandingPage() {
       <Hero />
       <Benefits /> {/* "Por qué nosotros" (Resumen) */}
       <Features /> {/* "Qué hacemos" (Detalle con imágenes) */}
-      <InteractiveDemo /> {/* "Cómo se ve" */}
+      <Ecosystem /> {/* "Cómo se ve" */}
       <Pricing />  {/* "Cuánto cuesta" */}
       <FAQ />      {/* "Dudas finales" */}
       <CallToAction />
